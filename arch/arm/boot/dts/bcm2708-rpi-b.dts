@@ -40,6 +40,11 @@
 		brcm,pins = <40 45>;
 		brcm,function = <4>;
 	};
+
+	nfc_pins: nc_pins {
+                brcm,pins = <17>;
+                brcm,function = <0>;
+        };
 };
 
 &uart0 {
@@ -72,12 +77,40 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0_pins>;
 	clock-frequency = <100000>;
+
+/*	    pn532: pn533@24 {
+
+                compatible = "nxp,pn533-i2c";
+
+                reg = <0x24>;
+                clock-frequency = <100000>;
+
+                interrupt-parent = <&gpio>;
+                interrupts = <17 IRQ_TYPE_EDGE_FALLING>;
+
+        };
+*/
 };
 
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins>;
 	clock-frequency = <100000>;
+
+         pn532: pn533@24 {
+	        pinctrl-names = "default";
+	        pinctrl-0 = <&nfc_pins>;
+
+                compatible = "nxp,pn533-i2c";
+
+                reg = <0x24>;
+                clock-frequency = <100000>;
+
+                interrupt-parent = <&gpio>;
+                interrupts = <17 IRQ_TYPE_EDGE_FALLING>;
+
+        };
+
 };
 
 &i2c2 {
