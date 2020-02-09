@@ -186,13 +186,14 @@ static struct pn533_phy_ops i2c_phy_ops = {
 static int pn533_i2c_probe(struct i2c_client *client,
 			       const struct i2c_device_id *id)
 {
+
 	struct pn533_i2c_phy *phy;
 	struct pn533 *priv;
 	int r = 0;
-
+	printk("[I2C] Send probe");
 	dev_dbg(&client->dev, "%s\n", __func__);
 	dev_dbg(&client->dev, "IRQ: %d\n", client->irq);
-
+    printk("===============i2c_pn533_probe==============\n");
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		nfc_err(&client->dev, "Need I2C_FUNC_I2C\n");
 		return -ENODEV;
@@ -202,6 +203,7 @@ static int pn533_i2c_probe(struct i2c_client *client,
 			   GFP_KERNEL);
 	if (!phy)
 		return -ENOMEM;
+	printk("===============i2c_pn533_probe phy==============\n");
 
 	phy->i2c_dev = client;
 	i2c_set_clientdata(client, phy);
@@ -212,9 +214,11 @@ static int pn533_i2c_probe(struct i2c_client *client,
 				     phy, &i2c_phy_ops, NULL,
 				     &phy->i2c_dev->dev,
 				     &client->dev);
+    printk("===============i2c_pn533_probe REGISTER==============\n");
 
 	if (IS_ERR(priv)) {
 		r = PTR_ERR(priv);
+		printk("===============i2c_pn533_probe PTR_ERR==============\n");
 		return r;
 	}
 
@@ -226,8 +230,10 @@ static int pn533_i2c_probe(struct i2c_client *client,
 				PN533_I2C_DRIVER_NAME, phy);
 	if (r < 0) {
 		nfc_err(&client->dev, "Unable to register IRQ handler\n");
+		printk("===============i2c_pn533_probe Unable to register IRQ handler==============\n");
 		goto irq_rqst_err;
 	}
+    printk("===============i2c_pn533_probe REQ==============\n");
 
 	r = pn533_finalize_setup(priv);
 	if (r)
@@ -240,6 +246,7 @@ fn_setup_err:
 
 irq_rqst_err:
 	pn533_unregister_device(phy->priv);
+    printk("===============i2c_pn533_probe END==============\n");
 
 	return r;
 }

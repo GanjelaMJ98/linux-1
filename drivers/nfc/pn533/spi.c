@@ -17,19 +17,20 @@
 #define VERSION "0.1"
 
 #define PN533_SPI_DRIVER_NAME "pn533_spi"
+/*
+    nfc_pins: nc_pins {
+        brcm,pins = <17>;
+        brcm,function = <0>;
+    };
 
-
-// &spi0 {
-//     status = "okay";                               
-//     max-freq = <24000000>;
-//     spidev@00 { 
-//         compatible = "nxp,pn533-spi";
-//         reg = <0x00>;
-//         spi-max-frequency = <14000000>;
-//         spi-cpha = <1>;
-//         //spi-cpol = <1>;
-//     };
-// };
+    pn533: pn533@0{
+        compatible = "nxp,pn533-spi";
+        reg = <0>;
+        spi-max-frequency = <125000000>;
+        interrupt-parent = <&gpio>;
+        interrupts = <17 IRQ_TYPE_EDGE_FALLING>;
+    };
+*/
 
 struct pn533_spi_phy {
     struct spi_device *spi_dev;
@@ -189,31 +190,41 @@ static irqreturn_t pn533_spi_irq_thread_fn(int irq, void *data)
     struct sk_buff *skb = NULL;
     int r;
 
-    printk("===============pn533_spi_irq_thread_fn==============\n");
+    printk("===============pn533_spi_irq_thread_fn 0==============\n");
     
-    if (!phy || irq != phy->spi_dev->irq) {
-        WARN_ON_ONCE(1);
-        return IRQ_NONE;
-    }
-
     spi_dev = phy->spi_dev;
+    // if (!phy || irq != phy->spi_dev->irq) {
+    //     WARN_ON_ONCE(1);
+    //     return IRQ_NONE;
+    // }
+
+    
     dev_dbg(&spi_dev->dev, "IRQ\n");
+    printk("===============pn533_spi_irq_thread_fn 1==============\n");
 
     if (phy->hard_fault != 0)
         return IRQ_HANDLED;
 
+    printk("===============pn533_spi_irq_thread_fn 2==============\n");
+
     r = pn533_spi_read(phy, &skb);
+
+    printk("===============pn533_spi_irq_thread_fn 3==============\n");
+
     if (r == -EREMOTEIO) {
         phy->hard_fault = r;
-
+        printk("===============pn533_spi_irq_thread_fn 3==============\n");
         pn533_recv_frame(phy->priv, NULL, -EREMOTEIO);
+        printk("===============pn533_spi_irq_thread_fn 5==============\n");
 
         return IRQ_HANDLED;
     } else if ((r == -ENOMEM) || (r == -EBADMSG) || (r == -EBUSY)) {
+        printk("===============pn533_spi_irq_thread_fn 6==============\n");
         return IRQ_HANDLED;
     }
 
     if (!phy->aborted)
+        printk("===============pn533_spi_irq_thread_fn 7==============\n");
         pn533_recv_frame(phy->priv, skb, 0);
 
     printk("===============pn533_spi_irq_thread_fn END==============\n");
@@ -276,9 +287,10 @@ static int pn533_spi_probe(struct spi_device *spi)
     printk("===============spi_pn533_probe REQ==============\n");
 
     r = pn533_finalize_setup(priv);
+    printk("===============spi_pn533_probe R==============\n");
     if (r)
         goto fn_setup_err;
-
+    printk("===============spi_pn533_probe END==============\n");
     return 0;
 
 fn_setup_err:
@@ -287,7 +299,7 @@ fn_setup_err:
 irq_rqst_err:
     pn533_unregister_device(phy->priv);
 
-    printk("===============spi_pn533_probe END==============\n");
+
     return r;
 
 }
