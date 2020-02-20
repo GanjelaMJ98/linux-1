@@ -2573,12 +2573,14 @@ int pn533_finalize_setup(struct pn533 *dev)
 
 	memset(&fw_ver, 0, sizeof(fw_ver));
 
+	printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);
 	rc = pn533_get_firmware_version(dev, &fw_ver);
 	if (rc) {
 		nfc_err(dev->dev, "Unable to get FW version\n");
 		return rc;
 	}
-
+	printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);
+	
 	nfc_info(dev->dev, "NXP PN5%02X firmware ver %d.%d now attached\n",
 		fw_ver.ic, fw_ver.ver, fw_ver.rev);
 
