@@ -108,13 +108,25 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
 	cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
-
+#if 0
 	spidev0: spidev@0{
 		compatible = "spidev";
 		reg = <0>;	/* CE0 */
 		#address-cells = <1>;
 		#size-cells = <0>;
 		spi-max-frequency = <125000000>;
+	};
+#endif
+	pn533: pn533@0{
+		pinctrl-names = "default";
+		//pinctrl-0 = <&nfc_pins>;
+		compatible = "nxp,pn533-spi";
+		reg = <0>;
+		spi-max-frequency = <125000000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		//interrupt-parent = <&gpio>;
+		//interrupts = <4 IRQ_TYPE_EDGE_FALLING>;
 	};
 
 	spidev1: spidev@1{
