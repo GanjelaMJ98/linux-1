@@ -75,10 +75,11 @@
 		brcm,function = <4>;
 	};
 
-	nfc_pins: nc_pins {
-		brcm,pins = <27>;
-		brcm,function = <0>;
-	};
+	nfc_pins: nfc_pins {
+	 	brcm,pins = <27>;
+	 	brcm,function = <0>;
+	 	brcm,pull = <2>;
+	 };
 };
 
 &mmcnr {
@@ -113,7 +114,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
 	cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
-
+#if 0
 	spidev0: spidev@0{
 		compatible = "spidev";
 		reg = <0>;	/* CE0 */
@@ -121,7 +122,17 @@
 		#size-cells = <0>;
 		spi-max-frequency = <125000000>;
 	};
+#endif
+	pn533: pn533@0{
+		pinctrl-names = "default";
+		pinctrl-0 = <&nfc_pins>;
 
+		compatible = "nxp,pn533-spi";
+		reg = <0>;
+		spi-max-frequency = <125000000>;
+		interrupt-parent = <&gpio>;
+		interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
+	};
 
 
 	spidev1: spidev@1{
@@ -145,6 +156,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins>;
 	clock-frequency = <100000>;
+	/*
 		pn532: pn533@24 {
 	        pinctrl-names = "default";
 	        pinctrl-0 = <&nfc_pins>;
@@ -157,7 +169,7 @@
                 interrupt-parent = <&gpio>;
                 interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
 
-        };
+        };*/
 };
 
 &i2c2 {

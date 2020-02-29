@@ -266,12 +266,16 @@ static int pn533_spi_probe(struct spi_device *spi)
     phy->spi_dev = spi_dev;
 
 
-	priv = pn533_register_device(PN533_DEVICE_PN532,
-				     PN533_NO_TYPE_B_PROTOCOLS,
-				     PN533_PROTO_REQ_ACK_RESP,
-				     phy, &spi_phy_ops, NULL,
-				     &phy->spi_dev->dev,
-				     &spi_dev->dev);
+	// priv = pn533_register_device(PN533_DEVICE_PN532,
+	// 			     PN533_NO_TYPE_B_PROTOCOLS,
+	// 			     PN533_PROTO_REQ_ACK_RESP,
+	// 			     phy, &spi_phy_ops, NULL,
+	// 			     &phy->spi_dev->dev,
+	// 			     &spi_dev->dev);
+    priv = pn53x_common_init(PN533_DEVICE_PN532,
+                     PN533_PROTO_REQ_ACK_RESP,
+                     phy, &spi_phy_ops, NULL,
+                     &phy->spi_dev->dev);
     
     //printk("===============spi_pn533_probe REGISTER==============\n");
     
@@ -286,6 +290,7 @@ static int pn533_spi_probe(struct spi_device *spi)
                 IRQF_TRIGGER_FALLING |
                 IRQF_SHARED | IRQF_ONESHOT,
                 PN533_SPI_DRIVER_NAME, phy);
+
     if (r < 0) {
         nfc_err(&spi_dev->dev, "Unable to register IRQ handler\n");
         goto irq_rqst_err;
@@ -303,7 +308,8 @@ fn_setup_err:
     free_irq(spi_dev->irq, phy);
 
 irq_rqst_err:
-    pn533_unregister_device(phy->priv);
+    nfc_free_device(priv->nfc_dev);
+    //pn533_unregister_device(phy->priv);
 
 
     return r;
@@ -327,7 +333,10 @@ static int pn533_spi_remove(struct spi_device *spi)
 
     free_irq(spi->irq, phy);
 
-    pn533_unregister_device(phy->priv);
+    pn53x_unregister_nfc(phy->priv);
+    pn53x_common_clean(phy->priv);
+
+    //pn533_unregister_device(phy->priv);
     printk("===============pn533_spi_remove END==============\n");
 
     return 0;
@@ -337,6 +346,7 @@ static int pn533_spi_remove(struct spi_device *spi)
 
 static const struct of_device_id of_pn533_spi_match[] = {
     { .compatible = "nxp,pn533-spi" },
+    { .compatible = "nxp,pn532-spi" },
     {},
 };
 
