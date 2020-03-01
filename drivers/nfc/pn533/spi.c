@@ -70,9 +70,8 @@ static int pn533_spi_send_frame(struct pn533 *dev,
 {
     struct pn533_spi_phy *phy = dev->phy;
     struct spi_device *spi_dev = phy->spi_dev;
-    int rc,i ;
-
-    printk("===============pn533_spi_send_frame==============\n");
+    int rc;
+    printk("%s:%d\n",__func__,__LINE__);
 
     if (phy->hard_fault != 0)
         return phy->hard_fault;
@@ -85,29 +84,32 @@ static int pn533_spi_send_frame(struct pn533 *dev,
     print_hex_dump_debug("PN533_SPI: ", DUMP_PREFIX_NONE, 16, 1,
                  out->data, out->len, false);
 
-    rc = spi_write(spi_dev, out->data, out->len);
-    printk("===============pn533_spi_send_frame DUMP==============\n");
-    for (i=0; i< out->len; i++) {
-        printk("x%x ", out->data[i]);
-    }
-
-
-    printk("\n===============pn533_spi_send_frame WRITE==============\n");
+    rc = spi_write(dev->phy->spi_dev, out->data, out->len);
+    printk("%s:%s:%d -- %d\n",__FILE__,__func__,__LINE__,rc);
+    // for (i=0; i< out->len; i++) {
+    //     printk("x%x ", out->data[i]);
+    // }
 
     if (rc == -EREMOTEIO) { /* Retry, chip was in power down */
+        printk("%s:%s:%d - %d\n",__FILE__,__func__,__LINE__,rc);
         usleep_range(6000, 10000);
         rc = spi_write(spi_dev, out->data, out->len);
     }
-
-    printk("===============pn533_spi_send_frame WRITE1==============\n");
+    printk("%s:%s:%d - %d\n",__FILE__,__func__,__LINE__,rc);
 
     if (rc >= 0) {
-        if (rc != out->len)
+        printk("%s:%s:%d - %d\n",__FILE__,__func__,__LINE__,rc);
+        if (rc != out->len){
+            printk("%s:%s:%d - %d\n",__FILE__,__func__,__LINE__,rc);
             rc = -EREMOTEIO;
-        else
+        }  
+        else{
+            printk("%s:%s:%d - %d\n",__FILE__,__func__,__LINE__,rc);
             rc = 0;
+        }
+            
     }
-    printk("===============pn533_spi_send_frame END==============\n");
+    printk("===============pn533_spi_send_frame END , rc = %d==============\n",rc);
     return rc;
 }
 
@@ -277,7 +279,7 @@ static int pn533_spi_probe(struct spi_device *spi)
                      phy, &spi_phy_ops, NULL,
                      &phy->spi_dev->dev);
     
-    //printk("===============spi_pn533_probe REGISTER==============\n");
+    printk("===============spi_pn533_probe REGISTER==============\n");
     
     if (IS_ERR(priv)) {
         r = PTR_ERR(priv);
@@ -296,16 +298,19 @@ static int pn533_spi_probe(struct spi_device *spi)
         goto irq_rqst_err;
     }
     printk("===============spi_pn533_probe REQ==============\n");
-    return 0;
+
     r = pn533_finalize_setup(priv);
-    printk("===============spi_pn533_probe R==============\n");
+    printk("===============spi_pn533_probe R1==============\n");
+    printk("%s:%s:%d - %d\n",__FILE__,__func__,__LINE__,r);
+    printk("===============spi_pn533_probe R1==============\n");
     if (r)
-goto fn_setup_err;
+        printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);
+        //goto fn_setup_err;
     printk("===============spi_pn533_probe END==============\n");
     return 0;
 
-fn_setup_err:
-    free_irq(spi_dev->irq, phy);
+//fn_setup_err:
+    //free_irq(spi_dev->irq, phy);
 
 irq_rqst_err:
     nfc_free_device(priv->nfc_dev);

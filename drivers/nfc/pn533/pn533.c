@@ -5,7 +5,7 @@
  * Copyright (C) 2011 Instituto Nokia de Tecnologia
  * Copyright (C) 2012-2013 Tieto Poland
  */
-
+#define DEBUG
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
