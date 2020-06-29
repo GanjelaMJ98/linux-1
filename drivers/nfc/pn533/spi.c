@@ -157,9 +157,6 @@ static void pn533_spi_abort_cmd(struct pn533 *dev, gfp_t flags)
 }
 
 
-
-
-
 static struct pn533_phy_ops spi_phy_ops = {
     .send_frame = pn533_spi_send_frame,
     .send_ack = pn533_spi_send_ack,
@@ -193,7 +190,6 @@ static irqreturn_t pn533_spi_irq_thread_fn(int irq, void *data)
     printk("===============%s 2==============\n",__func__);
 
     r = pn533_spi_read(phy, &skb);
-
     printk("===============pn533_spi_irq_thread_fn 3==============\n");
 
     if (r == -EREMOTEIO) {
@@ -280,6 +276,7 @@ static int pn533_spi_probe(struct spi_device *spi)
         goto fn_setup_err;
 
     return r;
+
 fn_setup_err:
     free_irq(spi_dev->irq, phy);
 
