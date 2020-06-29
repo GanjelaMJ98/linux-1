@@ -27,7 +27,7 @@
 	};
 
 	spi0_cs_pins: spi0_cs_pins {
-		brcm,pins = <8 7>;
+		brcm,pins = <4 7>;
 		brcm,function = <1>; /* output */
 	};
 
@@ -113,16 +113,17 @@
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_pins &spi0_cs_pins>;
-	cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
-#if 0
+	cs-gpios = <&gpio 4 1>, <&gpio 7 1>;
+
 	spidev0: spidev@0{
 		compatible = "spidev";
 		reg = <0>;	/* CE0 */
 		#address-cells = <1>;
 		#size-cells = <0>;
-		spi-max-frequency = <125000000>;
+		spi-max-frequency = <100000>;
 	};
-#endif
+#if 0
+
 	pn533: pn533@0{
 		pinctrl-names = "default";
 		pinctrl-0 = <&nfc_pins>;
@@ -133,14 +134,14 @@
 		interrupt-parent = <&gpio>;
 		interrupts = <27 IRQ_TYPE_EDGE_FALLING>;
 	};
-
+#endif
 
 	spidev1: spidev@1{
 		compatible = "spidev";
 		reg = <1>;	/* CE1 */
 		#address-cells = <1>;
 		#size-cells = <0>;
-		spi-max-frequency = <125000000>;
+		spi-max-frequency = <100000>;
 	};
 };
 
