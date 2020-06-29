@@ -67,7 +67,7 @@ static int pn533_spi_send_frame(struct pn533 *dev,
     struct pn533_spi_phy *phy = dev->phy;
     struct spi_device *spi_dev = phy->spi_dev;
     int rc,i;
-    u8 mas[256];
+    u8 mas[10] = {0x01, 0x00, 0x00, 0xff, 0x02, 0xfe, 0xd4, 0x02, 0x2a, 0x00};;
 
     if (phy->hard_fault != 0)
         return phy->hard_fault;
@@ -77,12 +77,13 @@ static int pn533_spi_send_frame(struct pn533 *dev,
 
     phy->aborted = false;
 
-    mas[0] = 0x1;
+    //mas[0] = 0x1;
     print_hex_dump_debug("PN533_SPI: ", DUMP_PREFIX_NONE, 16, 1,
                  mas, out->len+1, false);
 
-    for(i=0; i < out->len; i++);
-        mas[1+i]=out->data[i];
+    // for(i=0; i < out->len; i++);
+    //     mas[1+i]=out->data[i];
+
 
     rc = spi_write(spi_dev, mas, out->len+1);
 
